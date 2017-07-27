@@ -35,8 +35,11 @@ public class UserCommandProcessorRunnable implements Runnable {
             String command = "";
             in = socket.getInputStream();
             for (int b = 0; ((b = in.read()) >= 0);) {
-                System.out.println(b + " " + (char) b);
+                //System.out.println(b + " " + (char) b);
                 command = command + (char)b;
+                if(command.length() == 3) {
+                    break;
+                }
             }
             
             System.out.println("Got Command " + command);
@@ -48,7 +51,7 @@ public class UserCommandProcessorRunnable implements Runnable {
                     responseWritten = true;
                     break;
                 case "dec" :
-                    globalDataHolder.incrementCounter();
+                    globalDataHolder.decrementCounter();
                     out.write(SUCESSS.getBytes());
                     responseWritten = true;
                     break;

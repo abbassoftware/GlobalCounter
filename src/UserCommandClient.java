@@ -1,5 +1,9 @@
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 public class UserCommandClient {
     
@@ -9,28 +13,35 @@ public class UserCommandClient {
     
     public static void main(String[] args) {
         try {
-            Socket clientSocket = new Socket("localhost", 6900);
-            DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
-            outToServer.writeBytes(INC);
-            outToServer.close();
-            clientSocket.close();
             
-            Socket clientSocket2 = new Socket("localhost", 6900);
-            DataOutputStream outToServer2 = new DataOutputStream(clientSocket.getOutputStream());
-            outToServer2.writeBytes(INC);
-            outToServer2.close();
-            clientSocket2.close();
-            
-            
-            Socket clientSocket3 = new Socket("localhost", 6900);
-            DataOutputStream outToServer3 = new DataOutputStream(clientSocket.getOutputStream());
-            outToServer3.writeBytes(INC);
-            outToServer3.close();
-            clientSocket3.close();
+            sendCommand(GET);
+            sendCommand(INC);
+            sendCommand(INC);
+            sendCommand(GET);
+            sendCommand(DEC);
+            sendCommand(GET);
             
         } catch(Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    private static void sendCommand(String command) throws UnknownHostException, IOException {
+        Socket clientSocket = new Socket("localhost", 6900);
+        DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
+        outToServer.writeBytes(command);
+        
+        
+        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        if(command.equals(GET)) {
+            int response = inFromServer.read();
+            System.out.println(response);
+        } else {
+            String response = inFromServer.readLine();
+            System.out.println(response);
+        }
+        outToServer.close();
+        clientSocket.close();
     }
 
 }
