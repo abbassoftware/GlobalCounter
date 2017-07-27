@@ -1,55 +1,104 @@
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
 
 public class GlobalDataHolder {
     
-    private int currProcessNumber;
-    private int totalNumberOfProcess;
-    private List<Integer> addCounters = new CopyOnWriteArrayList<Integer>(); 
-    private List<Integer> subCounters = new CopyOnWriteArrayList<Integer>();
+    final private int currProcessNumber;
+    final private int totalNumberOfProcess;
+    final private List<Integer> addCounters = new CopyOnWriteArrayList<Integer>(); 
+    final private List<Integer> subCounters = new CopyOnWriteArrayList<Integer>();
+    private SyncStatePublisher statePublisher = null;
+    final private ExecutorService executor;
+
     
-    public GlobalDataHolder(int currProcessNumber, int totalNumberOfProcess) {
+    private Object addCounterLock = new Object();
+    private Object subCounterLock = new Object();
+    
+    public GlobalDataHolder(int currProcessNumber, int totalNumberOfProcess ,
+            ExecutorService executor) {
         this.currProcessNumber = currProcessNumber;
         this.totalNumberOfProcess = totalNumberOfProcess;
         for(int i=0 ; i < totalNumberOfProcess; i++) {
             addCounters.add(i, 0);
             subCounters.add(i,0);
         }
+        
+        this.executor = executor;
     }
     
     public int getCount() {
         int count = 0;
-        for(int i =0; i< addCounters.size(); i++) {
-            System.out.println("addCounters " + i + " : " + addCounters.get(i));
-            count = count + addCounters.get(i);
+        synchronized (addCounterLock) {
+            for(int i =0; i< addCounters.size(); i++) {
+                System.out.println("addCounters " + i + " : " + addCounters.get(i));
+                count = count + addCounters.get(i);
+            }
         }
         System.out.println("count after add " + count);
 
-        for(int i =0; i < subCounters.size(); i++) {
-            System.out.println("subCounters " + i + " : " + subCounters.get(i));
-            count = count - subCounters.get(i);
+        synchronized (subCounterLock) {
+            for(int i =0; i < subCounters.size(); i++) {
+                System.out.println("subCounters " + i + " : " + subCounters.get(i));
+                count = count - subCounters.get(i);
+            }
         }
         System.out.println("count after sub " + count);
 
         return count;
     }
     
-    synchronized public void incrementCounter() {
-        int newCount = addCounters.get(currProcessNumber) + 1;
-        addCounters.set(currProcessNumber, newCount);
+    public void incrementCounter() {
+        synchronized (addCounterLock) {
+            int newCount = addCounters.get(currProcessNumber) + 1;
+            addCounters.set(currProcessNumber, newCount);
+        }
+        
         System.out.println("currProcessNumber " + currProcessNumber);
         System.out.println("addCounters.size " + addCounters.size());
-
-
         System.out.println("add counter " + addCounters.get(currProcessNumber));
+        publishStateToOtherProcessesAsync();
     }
     
     synchronized public void decrementCounter() {
-        int newCount = subCounters.get(currProcessNumber) + 1;
-        subCounters.set(currProcessNumber, newCount);
+        synchronized (subCounterLock) {
+            int newCount = subCounters.get(currProcessNumber) + 1;
+            subCounters.set(currProcessNumber, newCount);
+        }
         System.out.println("sub counter " + subCounters.get(currProcessNumber));
+        publishStateToOtherProcessesAsync();
+    }
+    
+    
+    public List<Integer> getAddCounter() {
+        synchronized (addCounterLock) {
+            return new ArrayList<Integer>(addCounters);
+        }
+    }
+    
+    public List<Integer> getSubCounter() {
+        synchronized (subCounterLock) {
+            return new ArrayList<Integer>(subCounters);
+        }
+    }
+    
+    private void publishStateToOtherProcessesAsync() {
+        if(statePublisher != null) {
+            executor.submit(new Runnable() {
+                
+                @Override
+                public void run() {
+                    statePublisher.publishState();
+                    
+                }
+            });
+        }
+    }
 
+    public void setStatePublisher(SyncStatePublisher statePublisher) {
+        this.statePublisher = statePublisher;
     }
 
 }

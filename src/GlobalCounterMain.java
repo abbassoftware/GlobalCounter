@@ -1,10 +1,16 @@
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
 
-
+/**
+ * 
+ * The class creates the different objects and starts the server.
+ *
+ */
 public class GlobalCounterMain {
     
     private static ExecutorService executor = Executors.newFixedThreadPool(2);
@@ -13,7 +19,12 @@ public class GlobalCounterMain {
     
     public static void main(String[] args) {
         
-        System.out.println( "Hello World!" );
+        try {
+            InetAddress iAddress = InetAddress.getLocalHost();
+            String server_IP = iAddress.getHostAddress();
+            System.out.println("Server IP address : " +server_IP);
+        } catch (UnknownHostException e) {
+        }
 
        try {
             if(args.length != 4) {
@@ -48,7 +59,15 @@ public class GlobalCounterMain {
                 System.out.println(processes.get(i));
             }
             
-            GlobalDataHolder globalDataHolder = new GlobalDataHolder(processNumber, processes.size());
+            GlobalDataHolder globalDataHolder = new GlobalDataHolder(processNumber, 
+                    processes.size(),
+                    Executors.newFixedThreadPool(1));
+            
+            SyncStatePublisher statePublisher = new SyncStatePublisher
+                    (processes, globalDataHolder, processNumber, 
+                            Executors.newFixedThreadPool(processes.size()));
+            
+            globalDataHolder.setStatePublisher(statePublisher);
             UserCommandProcessor userCommandProcessor = 
                     new UserCommandProcessor(processes.get(processNumber),
                             Executors.newFixedThreadPool(MAX_THREADS_FOR_USER_COMMANDS), 
@@ -66,6 +85,8 @@ public class GlobalCounterMain {
                     
                 }
             });
+            
+            
            
         } catch(Exception e) {
             System.out.println(e);
