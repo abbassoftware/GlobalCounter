@@ -87,6 +87,25 @@ public class GlobalCounterMain {
             });
             
             
+            SyncCommandProcessor syncCommandProcessor = 
+                    new SyncCommandProcessor(processes.get(processNumber),
+                            Executors.newFixedThreadPool(processes.size()), 
+                            globalDataHolder, processes.size());
+            
+            
+            executor.execute( new Runnable() {
+                
+                @Override
+                public void run() {
+                    try {
+                        syncCommandProcessor.processSyncCommands();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    
+                }
+            });
+            
            
         } catch(Exception e) {
             System.out.println(e);

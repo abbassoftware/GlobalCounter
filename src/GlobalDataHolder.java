@@ -100,5 +100,30 @@ public class GlobalDataHolder {
     public void setStatePublisher(SyncStatePublisher statePublisher) {
         this.statePublisher = statePublisher;
     }
+    
+    public void merge(List<Integer> addCounter , List<Integer> subCounter) {
+        if(addCounter.size() != this.addCounters.size() ||
+                subCounter.size() != this.addCounters.size()) {
+            System.out.println("Merge input is corrurt. Ignore");
+            return;
+        }
+        
+        synchronized (addCounterLock) {
+            for(int i =0; i< this.addCounters.size(); i++) {
+                if(addCounter.get(i) >  this.addCounters.get(i)) {
+                    this.addCounters.set(i, addCounter.get(i));
+                }
+            }
+        }
+        
+        synchronized (subCounterLock) {
+            for(int i =0; i< this.subCounters.size(); i++) {
+                if(subCounter.get(i) >  this.subCounters.get(i)) {
+                    this.subCounters.set(i, subCounter.get(i));
+                }
+            }
+        }
+        
+    }
 
 }

@@ -14,20 +14,25 @@ public class UserCommandClient {
     public static void main(String[] args) {
         try {
             
-            sendCommand(GET);
-            sendCommand(INC);
-            sendCommand(INC);
-            sendCommand(GET);
-            sendCommand(DEC);
-            sendCommand(GET);
+            //sendCommand(GET);
+            sendCommand(INC, 6900);
+            sendCommand(INC, 6900);
+            sendCommand(DEC, 6902);
+            
+            Thread.sleep(2000);
+            sendCommand(GET, 6900);
+            sendCommand(GET, 6902);
+
+            
+            //sendCommand(GET);
             
         } catch(Exception e) {
             e.printStackTrace();
         }
     }
     
-    private static void sendCommand(String command) throws UnknownHostException, IOException {
-        Socket clientSocket = new Socket("localhost", 6900);
+    private static void sendCommand(String command, int port) throws UnknownHostException, IOException {
+        Socket clientSocket = new Socket("localhost", port);
         DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
         outToServer.writeBytes(command);
         

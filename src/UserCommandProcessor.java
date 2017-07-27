@@ -21,7 +21,7 @@ public class UserCommandProcessor {
         ServerSocket serverSocket  = new ServerSocket(process.getUserCommandPort());
 
         while (true) {
-           System.out.println("Sever Readuy to accept user commands");
+           System.out.println("Sever Ready to accept user commands");
            Socket socket = serverSocket.accept();
            
            System.out.println("Got a Client connection" + socket);
