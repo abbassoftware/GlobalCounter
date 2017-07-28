@@ -7,15 +7,22 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 
-
+/**
+ * This class responds to each user client connection made.
+ */
 public class UserCommandProcessorRunnable implements Runnable {
 
     private static String SUCESSS = "success";
     private static String FAILURE = "failure";
-
+   
+    final private Socket socket;
+    final private GlobalDataHolder globalDataHolder;
     
-    private Socket socket;
-    private GlobalDataHolder globalDataHolder;
+    /**
+     * Constructor.
+     * @param socket
+     * @param globalDataHolder
+     */
     public UserCommandProcessorRunnable(Socket socket, 
             GlobalDataHolder globalDataHolder) {
         this.socket = socket;
@@ -28,7 +35,6 @@ public class UserCommandProcessorRunnable implements Runnable {
         InputStream in = null;
         OutputStream out = null;
         boolean responseWritten = false;
-
         try {
             
             System.out.println("Reading data");
@@ -89,6 +95,4 @@ public class UserCommandProcessorRunnable implements Runnable {
         }
     }
     
-    
-
 }

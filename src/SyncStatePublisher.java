@@ -8,11 +8,18 @@ import java.util.concurrent.ExecutorService;
  */
 public class SyncStatePublisher {
    
-    private List<Process> processes;
-    private GlobalDataHolder globalDataHolder;
-    private int currProcessNum ;
-    private ExecutorService executor;
+    final private List<Process> processes;
+    final private GlobalDataHolder globalDataHolder;
+    final private int currProcessNum ;
+    final private ExecutorService executor;
     
+    /**
+     * Constructor.
+     * @param processes
+     * @param globalDataHolder
+     * @param currProcessNum
+     * @param executor
+     */
     public SyncStatePublisher(List<Process> processes, GlobalDataHolder globalDataHolder,
             int currProcessNum, ExecutorService executor) {
         super();
@@ -22,7 +29,9 @@ public class SyncStatePublisher {
         this.executor = executor;
     }
    
-   
+   /**
+    * Publises its current state to other processes in different threads.
+    */
     public void publishState() {
         List<Integer> addCounter = globalDataHolder.getAddCounter();
         List<Integer> subCounter = globalDataHolder.getSubCounter();
@@ -35,6 +44,4 @@ public class SyncStatePublisher {
         }
     }
     
-    
-
 }

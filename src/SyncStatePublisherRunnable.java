@@ -2,6 +2,10 @@ import java.io.DataOutputStream;
 import java.net.Socket;
 import java.util.List;
 
+/**
+ * This class publishes its current state to one another processes. 
+ *
+ */
 public class SyncStatePublisherRunnable implements Runnable {
 
     private Process process;

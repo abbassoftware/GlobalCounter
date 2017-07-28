@@ -5,6 +5,10 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+/**
+ * This is a client to send socket request and test the program. 
+ *
+ */
 public class UserCommandClient {
     
     public static String INC = "inc";

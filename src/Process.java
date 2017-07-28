@@ -1,4 +1,8 @@
 
+/**
+ * This class holds the information regarding one process.
+ * 
+ */
 public class Process {
     
     private String ip;
@@ -6,31 +10,43 @@ public class Process {
     private int communicationPort;
     
     
-    
+    /**
+     * Constructor.
+     * @param ip
+     * @param userCommandPort
+     * @param communicationPort
+     */
     public Process(String ip, int userCommandPort, int communicationPort) {
         super();
         this.ip = ip;
         this.userCommandPort = userCommandPort;
         this.communicationPort = communicationPort;
     }
+    
+    /**
+     * 
+     * @return IP address of the process.
+     */
     public String getIp() {
         return ip;
     }
-    public void setIp(String ip) {
-        this.ip = ip;
-    }
+  
+    /**
+     * 
+     * @return Port number where the process listens to user command.
+     */
     public int getUserCommandPort() {
         return userCommandPort;
     }
-    public void setUserCommandPort(int userCommandPort) {
-        this.userCommandPort = userCommandPort;
-    }
+   
+    /**
+     * 
+     * @return Port number where the process listens to sync command.
+     */
     public int getCommunicationPort() {
         return communicationPort;
     }
-    public void setCommunicationPort(int communicationPort) {
-        this.communicationPort = communicationPort;
-    }
+    
     @Override
     public String toString() {
         return "Process [ip=" + ip + ", userCommandPort=" + userCommandPort + ", communicationPort=" + communicationPort

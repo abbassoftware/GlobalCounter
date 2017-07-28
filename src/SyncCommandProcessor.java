@@ -3,13 +3,24 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 
+/**
+ * This class starts the server socket and creates threads to handle sync request. 
+ *
+ */
 public class SyncCommandProcessor {
     
-    private Process process;
-    private ExecutorService executor;
-    private GlobalDataHolder globalDataHolder;
+    final private Process process;
+    final private ExecutorService executor;
+    final private GlobalDataHolder globalDataHolder;
     final private int numberOfProcesses;
 
+    /**
+     * Constructor.
+     * @param process
+     * @param executor
+     * @param globalDataHolder
+     * @param numberOfProcesses
+     */
     public SyncCommandProcessor(Process process, 
             ExecutorService executor, 
             GlobalDataHolder globalDataHolder,
@@ -19,6 +30,11 @@ public class SyncCommandProcessor {
         this.globalDataHolder = globalDataHolder;
         this.numberOfProcesses = numberOfProcesses;
     }
+    
+    /**
+     * Starts a server socket and responds to incoming socket connection.
+     * @throws IOException
+     */
     
     public void processSyncCommands() throws IOException {
         ServerSocket serverSocket  = new ServerSocket(process.getCommunicationPort());

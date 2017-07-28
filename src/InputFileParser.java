@@ -7,16 +7,28 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * This class parses a space separate file to create a list of Processes. 
+ *
+ */
 public class InputFileParser {
     
-    public String filepath;
+    final private String filepath;
+    
+    /**
+     * Contructor.
+     * @param filePath
+     */
     public InputFileParser(String filePath) {
         this.filepath = filePath;
     }
-    
+
+    /**
+     * Parses the file and creates a list of Processes.
+     * @return
+     * @throws IOException
+     */
     public List<Process>  parse() throws IOException {
-        
         ArrayList<Process> processes = new ArrayList<Process>();
         
         FileInputStream fstream = new FileInputStream(filepath);
@@ -40,8 +52,7 @@ public class InputFileParser {
         br.close();
         
         return processes;
-        
-        
+            
     }
 
 }

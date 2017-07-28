@@ -4,6 +4,11 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 
+/*
+ * This class holds the global counter data. This also has the capabilities to merge 
+ * data which comes from the GlobalDataHolder of other process via sync. 
+ */
+
 public class GlobalDataHolder {
     
     final private int currProcessNumber;
@@ -17,6 +22,13 @@ public class GlobalDataHolder {
     private Object addCounterLock = new Object();
     private Object subCounterLock = new Object();
     
+    /**
+     * Constructor.
+     * @param currProcessNumber
+     * @param totalNumberOfProcess
+     * @param executor
+     */
+    
     public GlobalDataHolder(int currProcessNumber, int totalNumberOfProcess ,
             ExecutorService executor) {
         this.currProcessNumber = currProcessNumber;
@@ -29,6 +41,9 @@ public class GlobalDataHolder {
         this.executor = executor;
     }
     
+    /*
+     * This function returns the global count value currently present in this process.
+     */
     public int getCount() {
         int count = 0;
         synchronized (addCounterLock) {
@@ -50,6 +65,9 @@ public class GlobalDataHolder {
         return count;
     }
     
+    /*
+     * This function increments the global counter value by 1.
+     */
     public void incrementCounter() {
         synchronized (addCounterLock) {
             int newCount = addCounters.get(currProcessNumber) + 1;
@@ -62,6 +80,9 @@ public class GlobalDataHolder {
         publishStateToOtherProcessesAsync();
     }
     
+    /*
+     * This function increments the global decrements value by 1.
+     */
     synchronized public void decrementCounter() {
         synchronized (subCounterLock) {
             int newCount = subCounters.get(currProcessNumber) + 1;
@@ -71,19 +92,27 @@ public class GlobalDataHolder {
         publishStateToOtherProcessesAsync();
     }
     
-    
+    /*
+     * Returns a copy of the AddCounter array.
+     */
     public List<Integer> getAddCounter() {
         synchronized (addCounterLock) {
             return new ArrayList<Integer>(addCounters);
         }
     }
     
+    /*
+     * Returns a copy of the Sub Counters array.
+     */
     public List<Integer> getSubCounter() {
         synchronized (subCounterLock) {
             return new ArrayList<Integer>(subCounters);
         }
     }
     
+    /**
+     * Triggers a publish state of its data in Async manner.
+     */
     private void publishStateToOtherProcessesAsync() {
         if(statePublisher != null) {
             executor.submit(new Runnable() {
@@ -97,10 +126,20 @@ public class GlobalDataHolder {
         }
     }
 
+    /**
+     * Sets the reference of state publisher, which will use to publish its state 
+     * to other processes.
+     * @param statePublisher
+     */
     public void setStatePublisher(SyncStatePublisher statePublisher) {
         this.statePublisher = statePublisher;
     }
     
+   /**
+    * Merges the addCounter , subCounter values coming from another process.
+    * @param addCounter
+    * @param subCounter
+    */
     public void merge(List<Integer> addCounter , List<Integer> subCounter) {
         if(addCounter.size() != this.addCounters.size() ||
                 subCounter.size() != this.addCounters.size()) {

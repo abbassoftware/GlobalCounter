@@ -8,7 +8,7 @@ import java.util.concurrent.ExecutorService;
 
 /**
  * 
- * The class creates the different objects and starts the server.
+ * The main class which creates the different objects and starts the server.
  *
  */
 public class GlobalCounterMain {
