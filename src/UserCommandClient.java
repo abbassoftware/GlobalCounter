@@ -41,17 +41,19 @@ public class UserCommandClient {
     private static void sendCommand(String command, int port) throws UnknownHostException, IOException {
         Socket clientSocket = new Socket("localhost", port);
         DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
+        long startTime = System.currentTimeMillis();
         outToServer.writeBytes(command);
         
         
         BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         if(command.equals(GET)) {
             int response = inFromServer.read();
-            System.out.println(response);
+            System.out.println("Command " + command + " response is : " + response);
         } else {
             String response = inFromServer.readLine();
-            System.out.println(response);
+            System.out.println("Command " + command + " response is : " + response);
         }
+        System.out.println("Time taken for command " + command + " : " + (System.currentTimeMillis() - startTime + " ms"));
         outToServer.close();
         clientSocket.close();
     }
